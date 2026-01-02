@@ -28,7 +28,7 @@ FluxSim is a custom-built 3D rigid body physics engine designed for high numeric
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/yourusername/fluxsim.git
+git clone https://github.com/sidharthsreelal/fluxsim.git
 cd fluxsim
 ```
 
