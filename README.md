@@ -49,11 +49,3 @@ python test_engine.py
 ```
 
 Should all pass. Checks energy conservation, collision detection, and that nothing falls through the ground
-
-## Notes
-
-- No comments in the code, its meant to be readable as-is
-- Variable names are short (inv_m, ang_vel, etc) 
-- Tried to keep it dense but not unreadable
-
-That's about it
