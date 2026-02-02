@@ -268,27 +268,24 @@ def epa(c1: Collider, c2: Collider, simplex: Simplex, max_iter: int = 64, tol: f
         if support_dist - min_face.dist < tol:
             return min_face.normal, min_face.dist
         
-        edges = []
+        edges = {}
         i = 0
         while i < len(faces):
             f = faces[i]
             if f.normal.dot(support - f.verts[0]) > 0:
                 for j in range(3):
-                    edge = (f.verts[j], f.verts[(j + 1) % 3])
-                    found_idx = -1
-                    for k, existing in enumerate(edges):
-                        if vec_eq(existing[0], edge[1]) and vec_eq(existing[1], edge[0]):
-                            found_idx = k
-                            break
-                    if found_idx >= 0:
-                        edges.pop(found_idx)
+                    v0 = f.verts[j]
+                    v1 = f.verts[(j + 1) % 3]
+                    key = (id(v1), id(v0))
+                    if key in edges:
+                        del edges[key]
                     else:
-                        edges.append(edge)
+                        edges[(id(v0), id(v1))] = (v0, v1)
                 faces.pop(i)
             else:
                 i += 1
         
-        for e in edges:
+        for e in edges.values():
             faces.append(EPAFace(support, e[0], e[1]))
         
         if len(faces) == 0:
