@@ -26,7 +26,7 @@ Make sure you have Python 3.8+
 
 ```bash
 git clone https://github.com/sidharthsreelal/fluxsim.git
-cd flux
+cd fluxsim
 pip install -r requirements.txt
 ```
 
