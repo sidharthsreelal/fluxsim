@@ -21,6 +21,13 @@ class RigidBody:
         self.is_static = mass <= 0
         self.restitution = 0.5
         self.friction = 0.4
+        
+        self._I_world_inv_cache = None
+        self._I_world_cache = None
+        self._rot_cache_w = None
+        self._rot_cache_x = None
+        self._rot_cache_y = None
+        self._rot_cache_z = None
     
     def set_box_inertia(self, w: float, h: float, d: float) -> None:
         m = self.mass
@@ -36,12 +43,22 @@ class RigidBody:
         self.I_body_inv = Mat3.from_diagonal(Vec3(1.0/I, 1.0/I, 1.0/I))
     
     def get_world_inertia_inv(self) -> Mat3:
-        R = self.rot.to_mat3()
-        return R * self.I_body_inv * R.transpose()
+        r = self.rot
+        if (self._I_world_inv_cache is None or
+            self._rot_cache_w != r.w or self._rot_cache_x != r.x or
+            self._rot_cache_y != r.y or self._rot_cache_z != r.z):
+            R = r.to_mat3()
+            self._I_world_inv_cache = R * self.I_body_inv * R.transpose()
+            self._I_world_cache = R * self.I_body * R.transpose()
+            self._rot_cache_w = r.w
+            self._rot_cache_x = r.x
+            self._rot_cache_y = r.y
+            self._rot_cache_z = r.z
+        return self._I_world_inv_cache
     
     def get_world_inertia(self) -> Mat3:
-        R = self.rot.to_mat3()
-        return R * self.I_body * R.transpose()
+        self.get_world_inertia_inv()
+        return self._I_world_cache
     
     def apply_force(self, f: Vec3, world_pt: Optional[Vec3] = None) -> None:
         if self.is_static:
