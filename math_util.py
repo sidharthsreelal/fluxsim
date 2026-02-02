@@ -7,9 +7,9 @@ class Vec3:
     __slots__ = ('x', 'y', 'z')
     
     def __init__(self, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> None:
-        self.x = float(x)
-        self.y = float(y)
-        self.z = float(z)
+        self.x = x
+        self.y = y
+        self.z = z
     
     def __add__(self, o: Vec3) -> Vec3:
         return Vec3(self.x + o.x, self.y + o.y, self.z + o.z)
@@ -177,10 +177,10 @@ class Quat:
     __slots__ = ('w', 'x', 'y', 'z')
     
     def __init__(self, w: float = 1.0, x: float = 0.0, y: float = 0.0, z: float = 0.0) -> None:
-        self.w = float(w)
-        self.x = float(x)
-        self.y = float(y)
-        self.z = float(z)
+        self.w = w
+        self.x = x
+        self.y = y
+        self.z = z
     
     def __mul__(self, other: Union[Quat, float]) -> Quat:
         if isinstance(other, Quat):
