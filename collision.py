@@ -9,6 +9,9 @@ class Collider:
     
     def support(self, d: Vec3) -> Vec3:
         raise NotImplementedError
+    
+    def bounding_radius(self) -> float:
+        raise NotImplementedError
 
 
 class SphereCollider(Collider):
@@ -19,6 +22,9 @@ class SphereCollider(Collider):
     def support(self, d: Vec3) -> Vec3:
         d_norm = d.normalized()
         return self.body.pos + d_norm * self.radius
+    
+    def bounding_radius(self) -> float:
+        return self.radius
 
 
 class BoxCollider(Collider):
@@ -36,6 +42,10 @@ class BoxCollider(Collider):
         )
         
         return self.body.local_to_world(local_pt)
+    
+    def bounding_radius(self) -> float:
+        h = self.half
+        return (h.x * h.x + h.y * h.y + h.z * h.z) ** 0.5
 
 
 class ConvexHullCollider(Collider):
@@ -56,6 +66,14 @@ class ConvexHullCollider(Collider):
                 best = v
         
         return self.body.local_to_world(best)
+    
+    def bounding_radius(self) -> float:
+        max_dist_sq = 0.0
+        for v in self.local_verts:
+            d = v.mag_sq()
+            if d > max_dist_sq:
+                max_dist_sq = d
+        return max_dist_sq ** 0.5
 
 
 def minkowski_support(c1: Collider, c2: Collider, d: Vec3) -> Vec3:
@@ -296,6 +314,11 @@ def find_contact_point(c1: Collider, c2: Collider, normal: Vec3, depth: float) -
 
 
 def detect_collision(c1: Collider, c2: Collider) -> Optional[Contact]:
+    dist_sq = (c1.body.pos - c2.body.pos).mag_sq()
+    combined_radius = c1.bounding_radius() + c2.bounding_radius()
+    if dist_sq > combined_radius * combined_radius:
+        return None
+    
     hit, simplex = gjk(c1, c2)
     
     if not hit or simplex is None:
